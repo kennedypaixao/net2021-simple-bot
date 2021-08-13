@@ -10,10 +10,12 @@ namespace SimpleBotCore.Logic
     public class SimpleBot : BotDialog
     {
         IUserProfileRepository _userProfile;
+        IQuestionRepository _questionRepository;
 
-        public SimpleBot(IUserProfileRepository userProfile)
+        public SimpleBot(IUserProfileRepository userProfile, IQuestionRepository questionRepository)
         {
             _userProfile = userProfile;
+            _questionRepository = questionRepository;
         }
 
         protected async override Task BotConversation()
@@ -28,7 +30,7 @@ namespace SimpleBotCore.Logic
 
             await WriteAsync("Boa noite!");
 
-            if( user.Nome != null && user.Idade != 0 && user.Cor != null )
+            if (user.Nome != null && user.Idade != 0 && user.Cor != null)
             {
                 await WriteAsync(
                     $"{user.Nome}, de {user.Idade} anos, " +
@@ -36,7 +38,7 @@ namespace SimpleBotCore.Logic
             }
 
 
-            if( user.Nome == null )
+            if (user.Nome == null)
             {
                 await WriteAsync("Qual o seu nome?");
 
@@ -65,18 +67,23 @@ namespace SimpleBotCore.Logic
 
             await WriteAsync($"{user.Nome}, bem vindo ao Oraculo. Você tem direito a 3 perguntas");
 
-            for(int i=0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 string texto = await ReadAsync();
 
-                if( texto.EndsWith("?") )
+                if (texto.EndsWith("?"))
                 {
                     await WriteAsync("Processando...");
 
-                    // FAZER: GRAVAR AS PERGUNTAS EM UM BANCO DE DADOS
-                    await Task.Delay(5000);
+                    //// FAZER: GRAVAR AS PERGUNTAS EM UM BANCO DE DADOS
+                    //await Task.Delay(5000);
 
-                    await WriteAsync("Resposta não encontrada");
+                    await _questionRepository.Create(texto, i);
+
+                    await WriteAsync($"Pergunta salva com sucesso.");
+
+                    if (i > 3)
+                        await WriteAsync($"Qual sua pergunta { i + 1}:");
                 }
                 else
                 {
