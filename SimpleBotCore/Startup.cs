@@ -31,9 +31,12 @@ namespace SimpleBotCore
 
             string connectionString = "mongodb://localhost:27017";
             var client = new MongoClient(connectionString);
-            var questionRepository = new QuestionRepository(client);
-            services.AddSingleton<IQuestionRepository>(questionRepository);
+            var questionRepository = new QuestionMongoRepository(client);
+            services.AddSingleton<IQuestionMongoRepository>(questionRepository);
 
+            string connectionStringSQL = "Server=DESKTOP-KOC46F4;Database=MeuTrabalhoSQL;User=sa;Password=sa@12345678";
+            var questionSqlRepository = new QuestionSqlRepository(connectionStringSQL);
+            services.AddSingleton<IQuestionSqlRepository>(questionSqlRepository);
 
             services.AddSingleton<IUserProfileRepository>(new UserProfileMockRepository());
             services.AddSingleton<IBotDialogHub, BotDialogHub>();

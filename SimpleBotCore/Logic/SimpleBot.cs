@@ -10,12 +10,14 @@ namespace SimpleBotCore.Logic
     public class SimpleBot : BotDialog
     {
         IUserProfileRepository _userProfile;
-        IQuestionRepository _questionRepository;
+        IQuestionMongoRepository _questionMongoRepository;
+        IQuestionSqlRepository _questionSQLRepository;
 
-        public SimpleBot(IUserProfileRepository userProfile, IQuestionRepository questionRepository)
+        public SimpleBot(IUserProfileRepository userProfile, IQuestionMongoRepository questionMongoRepository, IQuestionSqlRepository questionSqlRepository)
         {
             _userProfile = userProfile;
-            _questionRepository = questionRepository;
+            _questionMongoRepository = questionMongoRepository;
+            _questionSQLRepository = questionSqlRepository;
         }
 
         protected async override Task BotConversation()
@@ -75,15 +77,21 @@ namespace SimpleBotCore.Logic
                 {
                     await WriteAsync("Processando...");
 
-                    //// FAZER: GRAVAR AS PERGUNTAS EM UM BANCO DE DADOS
-                    //await Task.Delay(5000);
+                    await _questionMongoRepository.Create(texto, i);
+                    await _questionSQLRepository.Create(texto, i);
 
-                    await _questionRepository.Create(texto, i);
+                    // SQL DE CRIAÇÃO DA TABELA UTILIZADA
+                    // CREATE TABLE dbo.Question(
+                    //    ID bigint NOT NULL IDENTITY(1, 1),
+                    //    Description nvarchar(MAX) NOT NULL,
+                    //    Position nchar(10) NOT NULL,
+                    //    CONSTRAINT PK_Question Primary Key(ID)
+                    //)
 
                     await WriteAsync($"Pergunta salva com sucesso.");
 
-                    if (i > 3)
-                        await WriteAsync($"Qual sua pergunta { i + 1}:");
+                    if (i < 3)
+                        await WriteAsync($"Qual sua próxima pergunta?");
                 }
                 else
                 {
