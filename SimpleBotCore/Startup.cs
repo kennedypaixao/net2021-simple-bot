@@ -34,7 +34,7 @@ namespace SimpleBotCore
             var questionRepository = new QuestionMongoRepository(client);
             services.AddSingleton<IQuestionMongoRepository>(questionRepository);
 
-            string connectionStringSQL = "Server=DESKTOP-KOC46F4;Database=MeuTrabalhoSQL;User=sa;Password=sa@12345678";
+            string connectionStringSQL = "Server=#;Database=#;User=#;Password=#";
             var questionSqlRepository = new QuestionSqlRepository(connectionStringSQL);
             services.AddSingleton<IQuestionSqlRepository>(questionSqlRepository);
 
